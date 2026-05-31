@@ -12,8 +12,8 @@ return new class extends Migration
     {
         Schema::create('book_rentals', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('book_id')->constrained()->restrictOnDelete();
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('book_id')->constrained();
             $table->string('status');
             $table->unsignedInteger('current_page')->default(0);
             $table->unsignedTinyInteger('extensions_count')->default(0);

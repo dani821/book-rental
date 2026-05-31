@@ -171,7 +171,7 @@ onMounted(() => {
             <ConfirmDialog
                 v-model:open="confirmOpen"
                 title="Delete book"
-                :description="`Permanently delete “${book.title}”? This can't be undone.`"
+                :description="`Remove “${book.title}” from the library? Its rental history is kept and it can be restored later.`"
                 confirm-label="Delete"
                 destructive
                 :loading="deleteLoading"

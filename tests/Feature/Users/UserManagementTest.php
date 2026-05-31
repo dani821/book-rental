@@ -107,7 +107,7 @@ class UserManagementTest extends TestCase
 
         $this->deleteJson("/api/v1/users/{$other->id}")->assertNoContent();
 
-        $this->assertModelMissing($other);
+        $this->assertSoftDeleted($other);
     }
 
     public function test_admin_cannot_delete_themselves(): void
@@ -154,7 +154,7 @@ class UserManagementTest extends TestCase
         $this->assertModelExists($member);
     }
 
-    public function test_deleting_a_user_with_only_completed_rentals_succeeds_and_cascades(): void
+    public function test_deleting_a_user_with_only_completed_rentals_soft_deletes_and_preserves_rental_history(): void
     {
         Sanctum::actingAs(User::factory()->admin()->create());
         $member = User::factory()->member()->create();
@@ -162,7 +162,11 @@ class UserManagementTest extends TestCase
 
         $this->deleteJson("/api/v1/users/{$member->id}")->assertNoContent();
 
-        $this->assertModelMissing($member);
-        $this->assertModelMissing($rental);
+        $this->assertSoftDeleted($member);
+        $this->assertModelExists($rental);
+        $this->assertDatabaseHas('book_rentals', [
+            'id' => $rental->id,
+            'user_id' => $member->id,
+        ]);
     }
 }

@@ -47,7 +47,7 @@ class BookRental extends Model
      */
     public function book(): BelongsTo
     {
-        return $this->belongsTo(Book::class);
+        return $this->belongsTo(Book::class)->withTrashed();
     }
 
     /**
@@ -59,8 +59,6 @@ class BookRental extends Model
     }
 
     /**
-     * The reading progress expressed as a whole percentage of the book's pages.
-     *
      * @return Attribute<int, never>
      */
     protected function progressPercentage(): Attribute

@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 const props = withDefaults(
     defineProps<{
-        variant?: 'default' | 'secondary' | 'outline' | 'success' | 'destructive';
+        variant?: 'default' | 'secondary' | 'outline' | 'success' | 'warning' | 'destructive';
         class?: HTMLAttributes['class'];
     }>(),
     {
@@ -22,6 +22,8 @@ const variantClasses = computed(() => {
             return 'text-foreground';
         case 'success':
             return 'border-transparent bg-success/10 text-success';
+        case 'warning':
+            return 'border-transparent bg-warning/15 text-warning';
         case 'destructive':
             return 'border-transparent bg-destructive/10 text-destructive';
         default:

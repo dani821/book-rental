@@ -23,20 +23,27 @@ const emit = defineEmits<{
 const isActive = computed(() => props.rental.status === 'active');
 const totalPages = computed(() => props.rental.book?.totalPages ?? 0);
 const canExtend = computed(() => isActive.value && props.rental.extensionsCount < MAX_RENTAL_EXTENSIONS);
+const bookDeleted = computed(() => props.rental.book?.deletedAt != null);
 </script>
 
 <template>
     <div class="flex flex-col rounded-xl border bg-card p-5 text-card-foreground shadow-sm">
         <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
-                <RouterLink
-                    v-if="rental.book"
-                    :to="{ name: 'books.show', params: { id: rental.book.id } }"
-                    class="line-clamp-2 font-semibold tracking-tight underline-offset-4 hover:underline"
-                >
-                    {{ rental.book.title }}
-                </RouterLink>
-                <span v-else class="font-semibold">Unknown book</span>
+                <div class="flex items-center gap-2">
+                    <RouterLink
+                        v-if="rental.book && !bookDeleted"
+                        :to="{ name: 'books.show', params: { id: rental.book.id } }"
+                        class="line-clamp-2 font-semibold tracking-tight underline-offset-4 hover:underline"
+                    >
+                        {{ rental.book.title }}
+                    </RouterLink>
+                    <span v-else-if="rental.book" class="line-clamp-2 font-semibold tracking-tight text-muted-foreground">
+                        {{ rental.book.title }}
+                    </span>
+                    <span v-else class="font-semibold">Unknown book</span>
+                    <Badge v-if="bookDeleted" variant="warning">Deleted</Badge>
+                </div>
                 <p class="text-sm text-muted-foreground">by {{ rental.book?.author ?? '—' }}</p>
             </div>
             <Badge :variant="isActive ? 'success' : 'secondary'" class="capitalize">{{ rental.status }}</Badge>

@@ -174,7 +174,7 @@ class BookManagementTest extends TestCase
         $book = Book::factory()->create();
 
         $this->deleteJson("/api/v1/books/{$book->id}")->assertNoContent();
-        $this->assertModelMissing($book);
+        $this->assertSoftDeleted($book);
     }
 
     public function test_deleting_a_book_with_active_rentals_returns_conflict(): void

@@ -26,6 +26,7 @@ export interface Book {
     rentedByCurrentUser: boolean;
     createdAt: string | null;
     updatedAt: string | null;
+    deletedAt: string | null;
 }
 
 export const BOOK_SORTS: ReadonlyArray<{ value: string; label: string }> = [

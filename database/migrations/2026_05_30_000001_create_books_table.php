@@ -21,6 +21,7 @@ return new class extends Migration
             $table->unsignedInteger('total_copies')->default(1);
             $table->unsignedInteger('available_copies')->default(1);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

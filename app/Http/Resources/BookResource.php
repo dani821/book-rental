@@ -23,5 +23,6 @@ class BookResource extends JsonApiResource
         'is_rented_by_current_user',
         'created_at',
         'updated_at',
+        'deleted_at',
     ];
 }

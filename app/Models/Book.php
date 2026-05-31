@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Override;
 
@@ -28,6 +29,7 @@ use Override;
  * @property int $available_copies
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property-read bool $is_rented_by_current_user
  * @property-read Collection<int, BookRental> $rentals
  */
@@ -35,7 +37,7 @@ use Override;
 class Book extends Model
 {
     /** @use HasFactory<BookFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * @return HasMany<BookRental, $this>

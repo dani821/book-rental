@@ -279,4 +279,29 @@ class RentalTest extends TestCase
             ->assertStatus(422)
             ->assertJsonPath('errors.0.title', 'Extension Limit Reached');
     }
+
+    public function test_index_still_returns_a_rental_whose_book_has_been_soft_deleted(): void
+    {
+        $user = User::factory()->member()->create();
+        Sanctum::actingAs($user);
+        $book = Book::factory()->create(['title' => 'Removed Title', 'total_pages' => 200]);
+        $rental = BookRental::factory()->completed()->create([
+            'user_id' => $user->id,
+            'book_id' => $book->id,
+            'current_page' => 100,
+        ]);
+
+        $book->delete();
+
+        $response = $this->getJson('/api/v1/rentals?include=book')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', (string) $rental->id)
+            ->assertJsonPath('data.0.attributes.progress_percentage', 50)
+            ->assertJsonPath('included.0.type', 'books')
+            ->assertJsonPath('included.0.id', (string) $book->id)
+            ->assertJsonPath('included.0.attributes.title', 'Removed Title');
+
+        $this->assertNotNull($response->json('included.0.attributes.deleted_at'));
+    }
 }

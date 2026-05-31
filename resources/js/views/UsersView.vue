@@ -142,7 +142,7 @@ onMounted(() => {
         <ConfirmDialog
             v-model:open="confirmOpen"
             title="Delete user"
-            :description="deletingUser ? `Permanently delete ${deletingUser.name}? This can't be undone.` : undefined"
+            :description="deletingUser ? `Remove ${deletingUser.name} from the system? Their rental history is kept and the account can be restored later.` : undefined"
             confirm-label="Delete"
             destructive
             :loading="deleteLoading"

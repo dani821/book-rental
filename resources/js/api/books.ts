@@ -16,6 +16,7 @@ export type BookResource = ResourceObject<
         is_rented_by_current_user?: boolean;
         created_at: string | null;
         updated_at: string | null;
+        deleted_at?: string | null;
     }
 >;
 
@@ -39,6 +40,7 @@ export function mapBookResource(resource: BookResource): Book {
         rentedByCurrentUser: resource.attributes.is_rented_by_current_user ?? false,
         createdAt: resource.attributes.created_at,
         updatedAt: resource.attributes.updated_at,
+        deletedAt: resource.attributes.deleted_at ?? null,
     };
 }
 

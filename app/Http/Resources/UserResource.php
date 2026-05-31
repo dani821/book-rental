@@ -17,5 +17,6 @@ class UserResource extends JsonApiResource
         'role',
         'created_at',
         'updated_at',
+        'deleted_at',
     ];
 }

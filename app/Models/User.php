@@ -64,6 +64,7 @@ class User extends Authenticatable
         return [
             'password' => 'hashed',
             'role' => UserRole::class,
+            'deleted_at' => 'datetime',
         ];
     }
 }

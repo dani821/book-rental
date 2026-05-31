@@ -88,6 +88,7 @@ class Book extends Model
             'total_pages' => 'integer',
             'total_copies' => 'integer',
             'available_copies' => 'integer',
+            'deleted_at' => 'datetime',
         ];
     }
 }

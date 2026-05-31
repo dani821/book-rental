@@ -1,0 +1,17 @@
+{
+    "extends": "@vue/tsconfig/tsconfig.dom.json",
+    "compilerOptions": {
+        "composite": false,
+        "noEmit": true,
+        "types": ["node", "vite/client"],
+        "paths": {
+            "@/*": ["./resources/js/*"]
+        },
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true
+    },
+    "include": ["resources/js/**/*", "resources/js/**/*.vue", "vite.config.js"],
+    "exclude": ["node_modules", "vendor", "public", "bootstrap/cache", "storage"]
+}

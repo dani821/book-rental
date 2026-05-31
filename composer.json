@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "convidera/book-rental",
     "type": "project",
-    "description": "REST JSON:API backend for a book rental library (auth, users, books, rentals).",
+    "description": "REST JSON:API backend for a book rental (auth, users, books, rentals).",
     "keywords": [
         "laravel",
         "json-api",

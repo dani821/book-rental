@@ -193,6 +193,81 @@ class BookManagementTest extends TestCase
         $this->assertModelExists($book);
     }
 
+    public function test_books_index_flags_books_the_current_user_has_an_active_rental_for(): void
+    {
+        $user = User::factory()->member()->create();
+        Sanctum::actingAs($user);
+
+        $rented = Book::factory()->create(['title' => 'Rented']);
+        Book::factory()->create(['title' => 'Available']);
+        BookRental::factory()->active()->create(['user_id' => $user->id, 'book_id' => $rented->id]);
+
+        $this->getJson('/api/v1/books?sort=title')
+            ->assertOk()
+            ->assertJsonPath('data.0.attributes.title', 'Available')
+            ->assertJsonPath('data.0.attributes.is_rented_by_current_user', false)
+            ->assertJsonPath('data.1.attributes.title', 'Rented')
+            ->assertJsonPath('data.1.attributes.is_rented_by_current_user', true);
+    }
+
+    public function test_rented_flag_is_scoped_to_the_current_user(): void
+    {
+        $user = User::factory()->member()->create();
+        $otherUser = User::factory()->member()->create();
+        Sanctum::actingAs($user);
+
+        $book = Book::factory()->create();
+        BookRental::factory()->active()->create(['user_id' => $otherUser->id, 'book_id' => $book->id]);
+
+        $this->getJson('/api/v1/books')
+            ->assertOk()
+            ->assertJsonPath('data.0.attributes.is_rented_by_current_user', false);
+    }
+
+    public function test_a_completed_rental_does_not_flag_a_book_as_rented(): void
+    {
+        $user = User::factory()->member()->create();
+        Sanctum::actingAs($user);
+
+        $book = Book::factory()->create();
+        BookRental::factory()->completed()->create(['user_id' => $user->id, 'book_id' => $book->id]);
+
+        $this->getJson('/api/v1/books')
+            ->assertOk()
+            ->assertJsonPath('data.0.attributes.is_rented_by_current_user', false);
+    }
+
+    public function test_book_show_flags_an_active_rental_for_the_current_user(): void
+    {
+        $user = User::factory()->member()->create();
+        Sanctum::actingAs($user);
+
+        $book = Book::factory()->create();
+        BookRental::factory()->active()->create(['user_id' => $user->id, 'book_id' => $book->id]);
+
+        $this->getJson("/api/v1/books/{$book->id}")
+            ->assertOk()
+            ->assertJsonPath('data.attributes.is_rented_by_current_user', true);
+    }
+
+    public function test_rented_flag_is_not_computed_for_admins(): void
+    {
+        $admin = User::factory()->admin()->create();
+        Sanctum::actingAs($admin);
+
+        $book = Book::factory()->create();
+        // Even if an admin had a rental, the flag is never computed for admins.
+        BookRental::factory()->active()->create(['user_id' => $admin->id, 'book_id' => $book->id]);
+
+        $this->getJson('/api/v1/books')
+            ->assertOk()
+            ->assertJsonPath('data.0.attributes.is_rented_by_current_user', false);
+
+        $this->getJson("/api/v1/books/{$book->id}")
+            ->assertOk()
+            ->assertJsonPath('data.attributes.is_rented_by_current_user', false);
+    }
+
     public function test_books_endpoints_require_authentication(): void
     {
         $this->getJson('/api/v1/books')->assertStatus(401);

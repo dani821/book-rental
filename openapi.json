@@ -710,6 +710,7 @@
                                     "total_pages",
                                     "total_copies",
                                     "available_copies",
+                                    "is_rented_by_current_user",
                                     "created_at",
                                     "updated_at"
                                 ]
@@ -888,6 +889,7 @@
                                     "total_pages",
                                     "total_copies",
                                     "available_copies",
+                                    "is_rented_by_current_user",
                                     "created_at",
                                     "updated_at"
                                 ]
@@ -969,6 +971,7 @@
                                     "total_pages",
                                     "total_copies",
                                     "available_copies",
+                                    "is_rented_by_current_user",
                                     "created_at",
                                     "updated_at"
                                 ]
@@ -1038,6 +1041,7 @@
                                     "total_pages",
                                     "total_copies",
                                     "available_copies",
+                                    "is_rented_by_current_user",
                                     "created_at",
                                     "updated_at"
                                 ]
@@ -1182,6 +1186,7 @@
                                     "total_pages",
                                     "total_copies",
                                     "available_copies",
+                                    "is_rented_by_current_user",
                                     "created_at",
                                     "updated_at"
                                 ]
@@ -1413,6 +1418,7 @@
                                     "total_pages",
                                     "total_copies",
                                     "available_copies",
+                                    "is_rented_by_current_user",
                                     "created_at",
                                     "updated_at"
                                 ]
@@ -1526,6 +1532,7 @@
                                     "total_pages",
                                     "total_copies",
                                     "available_copies",
+                                    "is_rented_by_current_user",
                                     "created_at",
                                     "updated_at"
                                 ]
@@ -1642,6 +1649,7 @@
                                     "total_pages",
                                     "total_copies",
                                     "available_copies",
+                                    "is_rented_by_current_user",
                                     "created_at",
                                     "updated_at"
                                 ]
@@ -1761,6 +1769,7 @@
                                     "total_pages",
                                     "total_copies",
                                     "available_copies",
+                                    "is_rented_by_current_user",
                                     "created_at",
                                     "updated_at"
                                 ]
@@ -1872,6 +1881,7 @@
                                     "total_pages",
                                     "total_copies",
                                     "available_copies",
+                                    "is_rented_by_current_user",
                                     "created_at",
                                     "updated_at"
                                 ]
@@ -2001,6 +2011,7 @@
                                     "total_pages",
                                     "total_copies",
                                     "available_copies",
+                                    "is_rented_by_current_user",
                                     "created_at",
                                     "updated_at"
                                 ]
@@ -2204,6 +2215,9 @@
                             },
                             "available_copies": {
                                 "type": "integer"
+                            },
+                            "is_rented_by_current_user": {
+                                "type": "string"
                             },
                             "created_at": {
                                 "type": [

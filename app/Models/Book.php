@@ -8,6 +8,7 @@ use App\Enums\BookGenre;
 use Database\Factories\BookFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,6 +28,7 @@ use Override;
  * @property int $available_copies
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read bool $is_rented_by_current_user
  * @property-read Collection<int, BookRental> $rentals
  */
 #[Fillable(['title', 'author', 'genre', 'isbn', 'published_year', 'total_pages', 'total_copies', 'available_copies'])]
@@ -41,6 +43,21 @@ class Book extends Model
     public function rentals(): HasMany
     {
         return $this->hasMany(BookRental::class);
+    }
+
+    /**
+     * Whether the authenticated user currently has an active rental for this book.
+     *
+     * Backed by the `is_rented_by_current_user` existence sub-select added to the books
+     * listing/detail queries; defaults to false when that sub-select was not run.
+     *
+     * @return Attribute<bool, never>
+     */
+    protected function isRentedByCurrentUser(): Attribute
+    {
+        return Attribute::make(
+            get: fn (): bool => (bool) ($this->attributes['is_rented_by_current_user'] ?? false),
+        );
     }
 
     /**

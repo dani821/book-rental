@@ -20,6 +20,7 @@ class BookResource extends JsonApiResource
         'total_pages',
         'total_copies',
         'available_copies',
+        'is_rented_by_current_user',
         'created_at',
         'updated_at',
     ];

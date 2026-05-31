@@ -1,0 +1,10 @@
+vendor
+node_modules
+public/build
+public/hot
+storage
+bootstrap/cache
+*.md
+package-lock.json
+composer.lock
+openapi.json

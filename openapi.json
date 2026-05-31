@@ -1,0 +1,2727 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Book Rental API",
+        "version": "1.0.0",
+        "description": "JSON:API for the book rental library. Responses use the `application/vnd.api+json` media type with a `data` envelope; errors use a top-level `errors[]` array. Authenticate with a Sanctum bearer token obtained from `register` or `login`."
+    },
+    "servers": [
+        {
+            "url": "http://book-rental.test/api/v1"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Auth"
+        },
+        {
+            "name": "Users"
+        },
+        {
+            "name": "Books"
+        },
+        {
+            "name": "Rentals"
+        }
+    ],
+    "security": [
+        {
+            "http": []
+        }
+    ],
+    "paths": {
+        "/register": {
+            "post": {
+                "operationId": "auth.register",
+                "tags": [
+                    "Auth"
+                ],
+                "parameters": [
+                    {
+                        "name": "fields[users]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "name",
+                                    "email",
+                                    "role",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`UserResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "token"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                },
+                "security": []
+            }
+        },
+        "/login": {
+            "post": {
+                "operationId": "auth.login",
+                "tags": [
+                    "Auth"
+                ],
+                "parameters": [
+                    {
+                        "name": "fields[users]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "name",
+                                    "email",
+                                    "role",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`UserResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "token"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                },
+                "security": []
+            }
+        },
+        "/logout": {
+            "post": {
+                "operationId": "auth.logout",
+                "tags": [
+                    "Auth"
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/me": {
+            "get": {
+                "operationId": "users.me",
+                "tags": [
+                    "Users"
+                ],
+                "parameters": [
+                    {
+                        "name": "fields[users]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "name",
+                                    "email",
+                                    "role",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`UserResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/users/{user}/password": {
+            "put": {
+                "operationId": "users.updateUserPassword",
+                "tags": [
+                    "Users"
+                ],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "description": "The user ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateUserPasswordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "operationId": "users.index",
+                "tags": [
+                    "Users"
+                ],
+                "parameters": [
+                    {
+                        "name": "fields[users]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "name",
+                                    "email",
+                                    "role",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `UserResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "users.store",
+                "tags": [
+                    "Users"
+                ],
+                "parameters": [
+                    {
+                        "name": "fields[users]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "name",
+                                    "email",
+                                    "role",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreUserRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`UserResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/users/{user}": {
+            "get": {
+                "operationId": "users.show",
+                "tags": [
+                    "Users"
+                ],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "description": "The user ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "fields[users]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "name",
+                                    "email",
+                                    "role",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`UserResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "users.destroy",
+                "tags": [
+                    "Users"
+                ],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "description": "The user ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/UserHasActiveRentalsException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/books": {
+            "get": {
+                "operationId": "books.index",
+                "tags": [
+                    "Books"
+                ],
+                "parameters": [
+                    {
+                        "name": "filter[title]",
+                        "in": "query",
+                        "description": "Filter by a partial, case-insensitive title match.",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "dune"
+                    },
+                    {
+                        "name": "filter[author]",
+                        "in": "query",
+                        "description": "Filter by a partial, case-insensitive author match.",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "herbert"
+                    },
+                    {
+                        "name": "filter[genre]",
+                        "in": "query",
+                        "description": "Filter by exact genre.",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "fantasy"
+                    },
+                    {
+                        "name": "filter[available]",
+                        "in": "query",
+                        "description": "When truthy, only books with at least one available copy are returned.",
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "example": true
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Sort field: one of title, author, published_year, created_at. Prefix with \"-\" for descending (e.g. -published_year).",
+                        "schema": {
+                            "type": "string",
+                            "default": "title"
+                        },
+                        "example": "-published_year"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number of the paginated result set (15 books per page).",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        },
+                        "example": 1
+                    },
+                    {
+                        "name": "fields[books]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "title",
+                                    "author",
+                                    "genre",
+                                    "isbn",
+                                    "published_year",
+                                    "total_pages",
+                                    "total_copies",
+                                    "available_copies",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `BookResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BookResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "books.store",
+                "tags": [
+                    "Books"
+                ],
+                "parameters": [
+                    {
+                        "name": "fields[books]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "title",
+                                    "author",
+                                    "genre",
+                                    "isbn",
+                                    "published_year",
+                                    "total_pages",
+                                    "total_copies",
+                                    "available_copies",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreBookRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`BookResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/books/{book}": {
+            "get": {
+                "operationId": "books.show",
+                "tags": [
+                    "Books"
+                ],
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "required": true,
+                        "description": "The book ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "fields[books]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "title",
+                                    "author",
+                                    "genre",
+                                    "isbn",
+                                    "published_year",
+                                    "total_pages",
+                                    "total_copies",
+                                    "available_copies",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`BookResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "books.update",
+                "tags": [
+                    "Books"
+                ],
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "required": true,
+                        "description": "The book ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "fields[books]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "title",
+                                    "author",
+                                    "genre",
+                                    "isbn",
+                                    "published_year",
+                                    "total_pages",
+                                    "total_copies",
+                                    "available_copies",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateBookRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`BookResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "books.destroy",
+                "tags": [
+                    "Books"
+                ],
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "required": true,
+                        "description": "The book ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/BookHasActiveRentalsException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/rentals": {
+            "get": {
+                "operationId": "rentals.index",
+                "tags": [
+                    "Rentals"
+                ],
+                "parameters": [
+                    {
+                        "name": "include",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "book"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    },
+                    {
+                        "name": "fields[rentals]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "status",
+                                    "current_page",
+                                    "progress_percentage",
+                                    "extensions_count",
+                                    "rented_at",
+                                    "due_at",
+                                    "returned_at",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    },
+                    {
+                        "name": "fields[books]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "title",
+                                    "author",
+                                    "genre",
+                                    "isbn",
+                                    "published_year",
+                                    "total_pages",
+                                    "total_copies",
+                                    "available_copies",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `BookRentalResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BookRentalResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        },
+                                        "included": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BookResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/rentals/{rental}": {
+            "get": {
+                "operationId": "rentals.show",
+                "tags": [
+                    "Rentals"
+                ],
+                "parameters": [
+                    {
+                        "name": "rental",
+                        "in": "path",
+                        "required": true,
+                        "description": "The rental ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "include",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "book"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    },
+                    {
+                        "name": "fields[rentals]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "status",
+                                    "current_page",
+                                    "progress_percentage",
+                                    "extensions_count",
+                                    "rented_at",
+                                    "due_at",
+                                    "returned_at",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    },
+                    {
+                        "name": "fields[books]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "title",
+                                    "author",
+                                    "genre",
+                                    "isbn",
+                                    "published_year",
+                                    "total_pages",
+                                    "total_copies",
+                                    "available_copies",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`BookRentalResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookRentalResource"
+                                        },
+                                        "included": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BookResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/books/{book}/rentals": {
+            "post": {
+                "operationId": "rentals.rentBook",
+                "tags": [
+                    "Rentals"
+                ],
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "required": true,
+                        "description": "The book ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "include",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "book"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    },
+                    {
+                        "name": "fields[rentals]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "status",
+                                    "current_page",
+                                    "progress_percentage",
+                                    "extensions_count",
+                                    "rented_at",
+                                    "due_at",
+                                    "returned_at",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    },
+                    {
+                        "name": "fields[books]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "title",
+                                    "author",
+                                    "genre",
+                                    "isbn",
+                                    "published_year",
+                                    "total_pages",
+                                    "total_copies",
+                                    "available_copies",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "`BookRentalResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookRentalResource"
+                                        },
+                                        "included": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BookResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/RentalAlreadyActiveException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/rentals/{rental}/extend": {
+            "patch": {
+                "operationId": "rentals.extendRental",
+                "tags": [
+                    "Rentals"
+                ],
+                "parameters": [
+                    {
+                        "name": "rental",
+                        "in": "path",
+                        "required": true,
+                        "description": "The rental ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "include",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "book"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    },
+                    {
+                        "name": "fields[rentals]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "status",
+                                    "current_page",
+                                    "progress_percentage",
+                                    "extensions_count",
+                                    "rented_at",
+                                    "due_at",
+                                    "returned_at",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    },
+                    {
+                        "name": "fields[books]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "title",
+                                    "author",
+                                    "genre",
+                                    "isbn",
+                                    "published_year",
+                                    "total_pages",
+                                    "total_copies",
+                                    "available_copies",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`BookRentalResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookRentalResource"
+                                        },
+                                        "included": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BookResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ExtensionLimitReachedException"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/RentalAlreadyFinishedException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/rentals/{rental}/progress": {
+            "get": {
+                "operationId": "rentals.readingProgress",
+                "tags": [
+                    "Rentals"
+                ],
+                "parameters": [
+                    {
+                        "name": "rental",
+                        "in": "path",
+                        "required": true,
+                        "description": "The rental ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "include",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "book"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    },
+                    {
+                        "name": "fields[rentals]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "status",
+                                    "current_page",
+                                    "progress_percentage",
+                                    "extensions_count",
+                                    "rented_at",
+                                    "due_at",
+                                    "returned_at",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    },
+                    {
+                        "name": "fields[books]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "title",
+                                    "author",
+                                    "genre",
+                                    "isbn",
+                                    "published_year",
+                                    "total_pages",
+                                    "total_copies",
+                                    "available_copies",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`BookRentalResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookRentalResource"
+                                        },
+                                        "included": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BookResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "rentals.updateReadingProgress",
+                "tags": [
+                    "Rentals"
+                ],
+                "parameters": [
+                    {
+                        "name": "rental",
+                        "in": "path",
+                        "required": true,
+                        "description": "The rental ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "include",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "book"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    },
+                    {
+                        "name": "fields[rentals]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "status",
+                                    "current_page",
+                                    "progress_percentage",
+                                    "extensions_count",
+                                    "rented_at",
+                                    "due_at",
+                                    "returned_at",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    },
+                    {
+                        "name": "fields[books]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "title",
+                                    "author",
+                                    "genre",
+                                    "isbn",
+                                    "published_year",
+                                    "total_pages",
+                                    "total_copies",
+                                    "available_copies",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateReadingProgressRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`BookRentalResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookRentalResource"
+                                        },
+                                        "included": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BookResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/RentalAlreadyFinishedException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/rentals/{rental}/finish": {
+            "patch": {
+                "operationId": "rentals.finishRental",
+                "tags": [
+                    "Rentals"
+                ],
+                "parameters": [
+                    {
+                        "name": "rental",
+                        "in": "path",
+                        "required": true,
+                        "description": "The rental ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "include",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "book"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    },
+                    {
+                        "name": "fields[rentals]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "status",
+                                    "current_page",
+                                    "progress_percentage",
+                                    "extensions_count",
+                                    "rented_at",
+                                    "due_at",
+                                    "returned_at",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    },
+                    {
+                        "name": "fields[books]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "title",
+                                    "author",
+                                    "genre",
+                                    "isbn",
+                                    "published_year",
+                                    "total_pages",
+                                    "total_copies",
+                                    "available_copies",
+                                    "created_at",
+                                    "updated_at"
+                                ]
+                            }
+                        },
+                        "explode": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`BookRentalResource`",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookRentalResource"
+                                        },
+                                        "included": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BookResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/RentalAlreadyFinishedException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "http": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        },
+        "schemas": {
+            "BookGenre": {
+                "type": "string",
+                "enum": [
+                    "fiction",
+                    "non_fiction",
+                    "science",
+                    "history",
+                    "fantasy",
+                    "biography"
+                ],
+                "title": "BookGenre"
+            },
+            "BookRentalResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "const": "rentals"
+                    },
+                    "attributes": {
+                        "type": "object",
+                        "properties": {
+                            "status": {
+                                "$ref": "#/components/schemas/RentalStatus"
+                            },
+                            "current_page": {
+                                "type": "integer"
+                            },
+                            "progress_percentage": {
+                                "type": "string"
+                            },
+                            "extensions_count": {
+                                "type": "integer"
+                            },
+                            "rented_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "due_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "returned_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "format": "date-time"
+                            },
+                            "created_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "format": "date-time"
+                            }
+                        }
+                    },
+                    "relationships": {
+                        "type": "object",
+                        "properties": {
+                            "book": {
+                                "type": "object",
+                                "properties": {
+                                    "data": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "type": {
+                                                "type": "string",
+                                                "const": "books"
+                                            }
+                                        },
+                                        "required": [
+                                            "id",
+                                            "type"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "data"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "type"
+                ],
+                "title": "BookRentalResource"
+            },
+            "BookResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "const": "books"
+                    },
+                    "attributes": {
+                        "type": "object",
+                        "properties": {
+                            "title": {
+                                "type": "string"
+                            },
+                            "author": {
+                                "type": "string"
+                            },
+                            "genre": {
+                                "$ref": "#/components/schemas/BookGenre"
+                            },
+                            "isbn": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "published_year": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "total_pages": {
+                                "type": "integer"
+                            },
+                            "total_copies": {
+                                "type": "integer"
+                            },
+                            "available_copies": {
+                                "type": "integer"
+                            },
+                            "created_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "format": "date-time"
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "type"
+                ],
+                "title": "BookResource"
+            },
+            "JsonApiError": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "example": "422"
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Unprocessable Entity"
+                    },
+                    "detail": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "example": "The email field is required."
+                    },
+                    "source": {
+                        "type": "object",
+                        "description": "Present for validation errors; a JSON Pointer into the request body.",
+                        "properties": {
+                            "pointer": {
+                                "type": "string",
+                                "example": "/email"
+                            }
+                        },
+                        "required": [
+                            "pointer"
+                        ]
+                    }
+                },
+                "required": [
+                    "status",
+                    "title"
+                ],
+                "title": "JsonApiError"
+            },
+            "LoginRequest": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "title": "LoginRequest"
+            },
+            "RegisterRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 255
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8
+                    },
+                    "password_confirmation": {
+                        "type": "string",
+                        "minLength": 8
+                    }
+                },
+                "required": [
+                    "name",
+                    "email",
+                    "password",
+                    "password_confirmation"
+                ],
+                "title": "RegisterRequest"
+            },
+            "RentalStatus": {
+                "type": "string",
+                "enum": [
+                    "active",
+                    "completed"
+                ],
+                "title": "RentalStatus"
+            },
+            "StoreBookRequest": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "author": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "genre": {
+                        "$ref": "#/components/schemas/BookGenre"
+                    },
+                    "isbn": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 20
+                    },
+                    "published_year": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 2026
+                    },
+                    "total_pages": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "total_copies": {
+                        "type": "integer",
+                        "minimum": 1
+                    }
+                },
+                "required": [
+                    "title",
+                    "author",
+                    "genre",
+                    "total_pages"
+                ],
+                "title": "StoreBookRequest"
+            },
+            "StoreUserRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 255
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8
+                    },
+                    "role": {
+                        "$ref": "#/components/schemas/UserRole"
+                    }
+                },
+                "required": [
+                    "name",
+                    "email",
+                    "password"
+                ],
+                "title": "StoreUserRequest"
+            },
+            "UpdateBookRequest": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "author": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "genre": {
+                        "$ref": "#/components/schemas/BookGenre"
+                    },
+                    "isbn": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 20
+                    },
+                    "published_year": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 2026
+                    },
+                    "total_pages": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "total_copies": {
+                        "type": "integer",
+                        "minimum": 1
+                    }
+                },
+                "title": "UpdateBookRequest"
+            },
+            "UpdateReadingProgressRequest": {
+                "type": "object",
+                "properties": {
+                    "current_page": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 1
+                    }
+                },
+                "required": [
+                    "current_page"
+                ],
+                "title": "UpdateReadingProgressRequest"
+            },
+            "UpdateUserPasswordRequest": {
+                "type": "object",
+                "properties": {
+                    "current_password": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        ]
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8
+                    },
+                    "password_confirmation": {
+                        "type": "string",
+                        "minLength": 8
+                    }
+                },
+                "required": [
+                    "password",
+                    "password_confirmation"
+                ],
+                "title": "UpdateUserPasswordRequest"
+            },
+            "UserResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "const": "users"
+                    },
+                    "attributes": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "email": {
+                                "type": "string"
+                            },
+                            "role": {
+                                "$ref": "#/components/schemas/UserRole"
+                            },
+                            "created_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "format": "date-time"
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "type"
+                ],
+                "title": "UserResource"
+            },
+            "UserRole": {
+                "type": "string",
+                "enum": [
+                    "admin",
+                    "member"
+                ],
+                "title": "UserRole"
+            }
+        },
+        "responses": {
+            "ValidationException": {
+                "description": "Unprocessable Entity",
+                "content": {
+                    "application/vnd.api+json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "errors": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/JsonApiError"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "errors"
+                            ]
+                        }
+                    }
+                }
+            },
+            "AuthenticationException": {
+                "description": "Unauthorized",
+                "content": {
+                    "application/vnd.api+json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "errors": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/JsonApiError"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "errors"
+                            ]
+                        }
+                    }
+                }
+            },
+            "AuthorizationException": {
+                "description": "Forbidden",
+                "content": {
+                    "application/vnd.api+json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "errors": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/JsonApiError"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "errors"
+                            ]
+                        }
+                    }
+                }
+            },
+            "ModelNotFoundException": {
+                "description": "Not Found",
+                "content": {
+                    "application/vnd.api+json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "errors": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/JsonApiError"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "errors"
+                            ]
+                        }
+                    }
+                }
+            },
+            "UserHasActiveRentalsException": {
+                "description": "User Has Active Rentals",
+                "content": {
+                    "application/vnd.api+json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "errors": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/JsonApiError"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "errors"
+                            ]
+                        }
+                    }
+                }
+            },
+            "BookHasActiveRentalsException": {
+                "description": "Book Has Active Rentals",
+                "content": {
+                    "application/vnd.api+json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "errors": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/JsonApiError"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "errors"
+                            ]
+                        }
+                    }
+                }
+            },
+            "RentalAlreadyActiveException": {
+                "description": "Rental Already Active",
+                "content": {
+                    "application/vnd.api+json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "errors": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/JsonApiError"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "errors"
+                            ]
+                        }
+                    }
+                }
+            },
+            "ExtensionLimitReachedException": {
+                "description": "Extension Limit Reached",
+                "content": {
+                    "application/vnd.api+json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "errors": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/JsonApiError"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "errors"
+                            ]
+                        }
+                    }
+                }
+            },
+            "RentalAlreadyFinishedException": {
+                "description": "Rental Already Finished",
+                "content": {
+                    "application/vnd.api+json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "errors": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/JsonApiError"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "errors"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

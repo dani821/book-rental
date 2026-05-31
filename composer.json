@@ -1,20 +1,25 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "convidera/book-rental",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "REST JSON:API backend for a book rental library (auth, users, books, rentals).",
     "keywords": [
         "laravel",
-        "framework"
+        "json-api",
+        "rest-api"
     ],
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "dedoc/scramble": "^0.13.24",
         "laravel/framework": "^13.8",
-        "laravel/tinker": "^3.0"
+        "laravel/sanctum": "^4.0",
+        "laravel/tinker": "^3.0",
+        "spatie/laravel-query-builder": "^7.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.10",
         "laravel/boost": "^2.2",
         "laravel/pail": "^1.2.5",
         "laravel/pao": "^1.0.6",
@@ -48,8 +53,13 @@
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
         ],
+        "lint": "pint",
+        "test:lint": "pint --test",
+        "stan": "phpstan analyse --memory-limit=512M",
+        "docs": "@php artisan scramble:export",
         "test": [
-            "@php artisan config:clear --ansi @no_additional_args",
+            "@test:lint",
+            "@stan",
             "@php artisan test"
         ],
         "post-autoload-dump": [
@@ -82,7 +92,6 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
-            "pestphp/pest-plugin": true,
             "php-http/discovery": true
         }
     },

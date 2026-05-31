@@ -7,6 +7,40 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## API Documentation
+
+This project ships an OpenAPI 3.1 specification for the **Library API**, generated from the
+code by [Scramble](https://scramble.dedoc.co) (static analysis — the code is the source of
+truth, so there are no hand-written endpoint annotations to drift out of sync).
+
+- **Interactive UI:** [`/docs/api`](http://book-rental.test/docs/api)
+- **Raw spec (served):** [`/docs/api.json`](http://book-rental.test/docs/api.json)
+- **Static spec (committed):** [`openapi.json`](openapi.json) at the repo root — open it in
+  [Swagger Editor](https://editor.swagger.io) or Redoc to browse the API without booting the app.
+
+Regenerate the static spec after changing the API:
+
+```bash
+composer docs   # → php artisan scramble:export, writes openapi.json
+```
+
+### Access control
+
+The docs routes are **not** publicly exposed in production. Scramble's `RestrictedDocsAccess`
+middleware serves them freely in the `local` environment; in any other environment it defers to
+the `viewApiDocs` gate, which is defined in `AppServiceProvider` to allow **admin users only**.
+
+### Authentication
+
+The API authenticates with a **Sanctum bearer token** obtained from `POST /register` or
+`POST /login` (returned in the response `meta.token`). The docs register an HTTP bearer security
+scheme applied to every `auth:sanctum` route, so the UI's "Try it out" sends
+`Authorization: Bearer <token>`. `register` and `login` are documented as public (no auth).
+
+Responses use the JSON:API media type `application/vnd.api+json`: success payloads are wrapped in
+a `data` envelope (collections add top-level `links`/`meta`), and errors use a top-level `errors[]`
+array (`{ status, title, detail, source.pointer }`), matching `App\Support\JsonApi`.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

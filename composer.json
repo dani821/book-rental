@@ -10,7 +10,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.3",
+        "php": "^8.5",
         "dedoc/scramble": "^0.13.24",
         "laravel/framework": "^13.8",
         "laravel/sanctum": "^4.0",
@@ -21,7 +21,6 @@
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.10",
         "laravel/boost": "^2.2",
-        "laravel/pail": "^1.2.5",
         "laravel/pao": "^1.0.6",
         "laravel/pint": "^1.27",
         "mockery/mockery": "^1.6",
@@ -41,11 +40,12 @@
         }
     },
     "scripts": {
-        "setup": [
+        "local-setup": [
             "composer install",
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php artisan key:generate",
             "@php artisan migrate --force",
+            "@php artisan db:seed --force",
             "npm install --ignore-scripts",
             "npm run build"
         ],

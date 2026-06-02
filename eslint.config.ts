@@ -13,8 +13,6 @@ export default defineConfigWithVueTs(
     vueTsConfigs.recommended,
     skipFormatting,
     {
-        // shadcn-vue primitives (Button, Card, Input, …) and reusable building blocks
-        // are intentionally single-word.
         name: 'app/ui-component-names',
         files: ['resources/js/components/**/*.vue'],
         rules: {
